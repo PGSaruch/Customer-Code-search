@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>customer-search-website</title>
+  <meta name="description" content="Standalone customer code search website for searching customer names by code and codes by customer name.">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{--text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);--text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);--text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-border:#d4d1ca;--color-text:#28251d;--color-text-muted:#6d6b65;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;--color-danger:#a13544;--color-danger-soft:#ecd5d9;--color-text-inverse:#f9f8f4;--shadow-sm:0 1px 2px rgba(20,20,20,.06);--shadow-md:0 8px 24px rgba(20,20,20,.08);--radius-md:.75rem;--radius-lg:1rem;--radius-full:9999px;--font-body:'Satoshi','Inter',sans-serif;--content-wide:1200px;}
+    [data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-border:#393836;--color-text:#e5e3de;--color-text-muted:#a9a69d;--color-primary:#4f98a3;--color-primary-hover:#6aafba;--color-primary-highlight:#313b3b;--color-danger:#dd6974;--color-danger-soft:#4b2d33;--color-text-inverse:#171614;--shadow-sm:0 1px 2px rgba(0,0,0,.25);--shadow-md:0 8px 24px rgba(0,0,0,.28)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-text-size-adjust:none;text-size-adjust:none;scroll-behavior:smooth}
+    body{min-height:100vh;font-family:var(--font-body);font-size:var(--text-base);line-height:1.6;background:var(--color-bg);color:var(--color-text)}
+    img,svg{display:block;max-width:100%;height:auto}
+    button,input,textarea{font:inherit;color:inherit}
+    button{cursor:pointer;border:none;background:none}
+    a{color:inherit;text-decoration:none}
+    .app{max-width:var(--content-wide);margin:0 auto;padding:var(--space-6)}
+    .topbar,.result-head,.row-between,.hero-top{display:flex;justify-content:space-between;align-items:center;gap:var(--space-4)}
+    .brand{display:flex;align-items:center;gap:var(--space-3)}
+    .logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-hover));color:var(--color-text-inverse);display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+    .logo svg{width:24px;height:24px}
+    h1,h2,h3{line-height:1.15}
+    h1{font-size:var(--text-xl)}
+    .sub,.muted{color:var(--color-text-muted)}
+    .theme-toggle{min-width:44px;min-height:44px;border-radius:var(--radius-full);background:var(--color-surface);border:1px solid var(--color-border);display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+    .panel{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
+    .hero{padding:var(--space-8);margin:var(--space-6) 0;background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2))}
+    .hero-copy{max-width:68ch}
+    .hero-copy p{margin-top:var(--space-3)}
+    .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3);margin-top:var(--space-6)}
+    .stat{padding:var(--space-4);border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2)}
+    .stat .value{font-size:var(--text-lg);font-weight:700}
+    .layout{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--space-6)}
+    .card{padding:var(--space-6)}
+    .section-title{font-size:var(--text-lg);margin-bottom:var(--space-4)}
+    .field{display:grid;gap:var(--space-2);margin-bottom:var(--space-4);position:relative}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+    .label{font-size:var(--text-sm);font-weight:700}
+    .input,.textarea{width:100%;border:1px solid var(--color-border);background:var(--color-surface-2);border-radius:var(--radius-md);padding:.9rem 1rem}
+    .input:focus,.textarea:focus{outline:2px solid var(--color-primary);outline-offset:2px}
+    .segment,.actions,.mini-actions,.toolbar,.modal-actions{display:flex;flex-wrap:wrap;gap:var(--space-3)}
+    .segment{margin-bottom:var(--space-5)}
+    .seg-btn,.btn{min-height:44px;padding:.8rem 1rem;border-radius:var(--radius-md);border:1px solid transparent}
+    .seg-btn{border-color:var(--color-border)}
+    .seg-btn.active,.btn-primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:var(--color-primary)}
+    .btn-primary:hover{background:var(--color-primary-hover)}
+    .btn-secondary{background:var(--color-primary-highlight)}
+    .btn-danger{background:var(--color-danger-soft);color:var(--color-danger)}
+    .status{display:inline-flex;align-items:center;gap:var(--space-2);padding:.45rem .75rem;border-radius:var(--radius-full);background:var(--color-primary-highlight);font-size:var(--text-sm)}
+    .suggestions{position:absolute;top:100%;left:0;right:0;z-index:10;margin-top:var(--space-2);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);overflow:hidden}
+    .suggestion-item{width:100%;text-align:left;padding:.9rem 1rem;background:transparent;border-bottom:1px solid var(--color-border);display:grid;gap:var(--space-1)}
+    .suggestion-item:last-child{border-bottom:none}.suggestion-item:hover,.suggestion-item.active{background:var(--color-primary-highlight)}
+    .suggestion-main,.name{font-weight:700}.suggestion-sub,.tiny{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .results,.manage-list{display:grid;gap:var(--space-3);margin-top:var(--space-4)}
+    .results{max-height:430px;overflow:auto}.manage-list{max-height:540px;overflow:auto}
+    .result,.manage-row{padding:var(--space-4);border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2)}
+    .code{display:inline-flex;padding:.35rem .65rem;border-radius:var(--radius-full);background:var(--color-primary-highlight);color:var(--color-primary-hover);font-weight:700;font-size:var(--text-sm)}
+    .name{margin-top:var(--space-2)}
+    .empty{border:1px dashed var(--color-border);border-radius:var(--radius-md);padding:var(--space-6);color:var(--color-text-muted);text-align:center;background:var(--color-surface-2)}
+    .table-wrap{margin-top:var(--space-6);overflow:auto}.mini-actions{margin-top:var(--space-3)}
+    table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+    th,td{text-align:left;padding:.85rem;border-bottom:1px solid var(--color-border)}
+    th{color:var(--color-text-muted);font-weight:700;background:var(--color-surface-2);position:sticky;top:0}
+    .footer{margin-top:var(--space-6);padding-bottom:var(--space-8);color:var(--color-text-muted);font-size:var(--text-sm)}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:center;justify-content:center;padding:var(--space-4);z-index:1000}
+    .modal-backdrop.show{display:flex}.modal{width:min(520px,100%);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:var(--space-6)}
+    .modal-title{font-size:var(--text-lg);margin-bottom:var(--space-3)}.modal-text{color:var(--color-text-muted);margin-bottom:var(--space-5)}
+    @media (max-width:980px){.app{padding:var(--space-4)}.layout,.two-col,.hero-stats{grid-template-columns:1fr}.topbar,.result-head,.row-between,.hero-top{flex-direction:column;align-items:flex-start}.results,.manage-list{max-height:none}.modal-actions{width:100%}.modal-actions .btn{flex:1}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-label="Customer Search Logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="5"></circle><path d="M14 14l6 6"></path><path d="M8 10h4"></path><path d="M10 8v4"></path></svg>
+        </div>
+        <div>
+          <h1>Customer Search Website</h1>
+          <p class="sub">เว็บไซต์ standalone สำหรับค้นหา Customer Name จาก Code และค้นหา Code จาก Customer Name</p>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Switch theme"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
+    </header>
+
+    <section class="hero panel">
+      <div class="hero-top">
+        <div class="hero-copy">
+          <h2>พร้อมใช้งานบนเว็บโฮสต์ทั่วไป</h2>
+          <p class="sub">ไฟล์นี้เป็น HTML เดียว ใช้งานได้เอง ไม่พึ่ง Perplexity, ไม่ต้องมี backend และสามารถนำไปวางบน shared hosting, intranet หรือ static hosting ได้ทันที</p>
+        </div>
+        <div class="status" id="inlineStatus">พร้อมใช้งาน</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="value" id="totalCount">0</div><div>จำนวนรายการทั้งหมด</div></div>
+        <div class="stat"><div class="value" id="addCount">0</div><div>จำนวนที่เพิ่มใน session นี้</div></div>
+        <div class="stat"><div class="value" id="deleteCount">0</div><div>จำนวนที่ลบใน session นี้</div></div>
+        <div class="stat"><div class="value" id="statusCount">Ready</div><div id="statusText">สถานะล่าสุด</div></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="panel card">
+        <h2 class="section-title">ค้นหาข้อมูล</h2>
+        <div class="segment" role="tablist" aria-label="Search mode">
+          <button class="seg-btn active" data-mode="code">หา Customer จาก Code</button>
+          <button class="seg-btn" data-mode="name">หา Code จาก Customer</button>
+        </div>
+        <div class="field">
+          <label class="label" for="queryInput">คำค้นหา</label>
+          <input id="queryInput" class="input" type="text" placeholder="เช่น W00GKH หรือ SIAM" autocomplete="off" />
+          <div id="suggestions" class="suggestions" hidden></div>
+        </div>
+        <div class="toolbar">
+          <button class="btn btn-primary" id="searchBtn">ค้นหา</button>
+          <button class="btn btn-secondary" id="exportBtn">Export CSV</button>
+          <button class="btn btn-secondary" id="resetBtn">Reset กลับค่าเริ่มต้น</button>
+        </div>
+        <div class="result-head" style="margin-top:var(--space-5)">
+          <div>
+            <h3 class="section-title" style="margin:0">ผลการค้นหา</h3>
+            <p class="tiny">autocomplete จะทำงานเมื่อค้นหาด้วยชื่อลูกค้า</p>
+          </div>
+          <div class="status"><span id="resultCount">0</span> รายการ</div>
+        </div>
+        <div id="results" class="results"></div>
+      </section>
+
+      <section class="panel card">
+        <h2 class="section-title">จัดการรายชื่อ</h2>
+        <div class="two-col">
+          <div class="field"><label class="label" for="newCode">Code</label><input id="newCode" class="input" type="text" placeholder="เช่น W00AAA" /></div>
+          <div class="field"><label class="label" for="newName">Customer Name</label><input id="newName" class="input" type="text" placeholder="เช่น ABC AUTOMATION CO.,LTD." /></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="addBtn">Add รายการ</button>
+          <button class="btn btn-secondary" id="updateBtn">Update รายการเดิม</button>
+        </div>
+        <p class="tiny" style="margin-top:var(--space-3)">กด Delete แล้วระบบจะถามยืนยันก่อนลบทุกครั้ง</p>
+        <div class="field" style="margin-top:var(--space-5)">
+          <label class="label" for="bulkData">เพิ่มหลายรายการพร้อมกัน</label>
+          <textarea id="bulkData" class="textarea" rows="8" placeholder="วางข้อมูลแบบ CODE,CUSTOMER_NAME ทีละบรรทัด&#10;ตัวอย่าง:&#10;W00ABC,ABC AUTOMATION CO.,LTD.&#10;869999,NEW CUSTOMER CO.,LTD."></textarea>
+        </div>
+        <div class="actions"><button class="btn btn-secondary" id="loadBtn">Add จากช่องด้านบน</button></div>
+        <div class="row-between" style="margin-top:var(--space-6)">
+          <div><h3 class="section-title" style="margin:0">ลบรายการ</h3><p class="tiny">Delete จะเปิด popup ยืนยันก่อนทุกครั้ง</p></div>
+        </div>
+        <div id="manageList" class="manage-list"></div>
+      </section>
+    </section>
+
+    <section class="panel card table-wrap">
+      <div class="row-between" style="margin-bottom:var(--space-4)">
+        <h2 class="section-title" style="margin:0">ข้อมูลทั้งหมดในระบบ</h2>
+        <div class="tiny">ตารางนี้จะอัปเดตทันทีเมื่อ Add, Update หรือ Delete</div>
+      </div>
+      <table>
+        <thead><tr><th>CODE</th><th>CUSTOMER_NAME</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+
+    <p class="footer">Deployment: อัปโหลดไฟล์นี้ขึ้นเว็บเซิร์ฟเวอร์ได้ทันที เช่น Netlify, Vercel, GitHub Pages, shared hosting หรือเว็บภายในบริษัท</p>
+  </main>
+
+  <div id="deleteModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle" class="modal-title">ยืนยันการลบ</h3>
+      <p id="modalMessage" class="modal-text">คุณต้องการลบรายการนี้ใช่หรือไม่</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelDeleteBtn" type="button">ยกเลิก</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn" type="button">ยืนยันการลบ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const initialData = [
+      { code: 'W00GKH', name: 'A M S INTERPART CO.,LTD (HEAD OFFICE)' }, { code: '862564', name: 'AIT SERVICE CO.,LTD. (HEAD OFFICE)' }, { code: '861200', name: 'ALSYS (THAILAND) CO.,LTD. (HEAD OFFICE)' }, { code: 'W00B67', name: 'AMAZING DESIGN (THAILAND) CO.,LTD (HEAD OFFICE)' }, { code: 'W00I5C', name: 'AMD SOLUTION CO.,LTD. (HEAD OFFICE)' }, { code: 'W00DXQ', name: 'AUTOMATION NETWORK DESIGN CO.,LTD (HEAD OFFICE)' }, { code: '869401', name: 'BTS AUTOMATION ENGINEERING CO.,LTD.' }, { code: '862286', name: 'CLP ENGINEERING CO., LTD (HEAD OFFICE)' }, { code: '868091', name: 'COLIBRI AUTOMATION (THAILAND) CO.,LTD.' }, { code: '862751', name: 'CREFORM YAZAKI (THAILAND) CO., LTD.' }, { code: '00073X', name: 'D PROGRESS PLUS CO., LTD. (HEAD OFFICE)' }, { code: '868220', name: 'D2S PROFESSIONAL CO.,LTD. (HEAD OFFICE)' }, { code: '144252', name: 'DAISIN CO.,LTD. (HEAD OFFICE)' }, { code: '868771', name: 'DYNAMIC MECHATRONICS ENGINEERING CO.,LTD.' }, { code: 'W00DE4', name: 'EC MACHINE 99 CO.,LTD. (HEAD OFFICE)' }, { code: '869258', name: 'EIGHTDMOTION CO.,LTD' }, { code: '865006', name: 'FOCUZ MANUFACTURING CO., LTD. (HEAD OFFICE)' }, { code: '529125', name: 'FUJI ELECTRIC MANUFACTURING (THAILAND) CO.,LTD.(HEAD OFFICE)' }, { code: '860467', name: 'FUJI POLY (THAILAND) CO.,LTD (HEAD OFFICE)' }, { code: '861295', name: 'INTER TECH ENGINEERING CO.,LTD.' }, { code: '868830', name: 'ISHIKAWA PRECISION TOOLS CO.,LTD. (HEAD OFFICE)' }, { code: '867541', name: 'JGC (THAILAND) CO.,LTD.' }, { code: '860562', name: 'K AND N MECHATRONIC CO.,LTD (HEAD OFFICE)' }, { code: '868302', name: 'LDT MICRO PRECISION COMPANY LIMITED' }, { code: '527656', name: 'MP TOOLS TECHNOLOGY CO.,LTD. (HEAD OFFICE)' }, { code: '145780', name: 'MUSASHI AUTO PARTS CO.,LTD. (HEAD OFFICE)' }, { code: '527626', name: 'MY PART PRECISION CO.,LTD (HEAD OFFICE)' }, { code: '869183', name: 'NEO INTERTECH CO.,LTD.' }, { code: '145634', name: 'NIPPON GASKET (THAILAND) CO.,LTD. (HEAD OFFICE)' }, { code: '861067', name: 'NISSIN ELECTRIC (THAILAND) CO.,LTD. (HEAD OFFICE)' }, { code: '864527', name: 'NIXMA TECHNOLOGY CO.,LTD. (HEAD OFFICE)' }, { code: '862117', name: 'NOVA AUTOTECH CO., LTD. (HEAD OFFICE)' }, { code: '528208', name: 'PNP ALL CO.,LTD. (HEAD OFFICE)' }, { code: '863482', name: 'PROIMAGE AUTOMATION CO., LTD.' }, { code: '869181', name: 'SAHATOOLS CO.,LTD.' }, { code: '145035', name: 'SEIKO PRECISION (THAILAND) CO.,LTD.' }, { code: '861560', name: 'SIAM INTEGRATION SYSTEMS CO., LTD. (HEAD OFFICE)' }, { code: '861808', name: 'SIAM KUBOTA CORPORATION CO.,LTD.' }, { code: '863086', name: 'SIAM PRECISION COMPONENTS CO., LTD.' }, { code: 'W001PY', name: 'SUCCESS CENTER SUPPLY CO.,LTD (HEAD OFFICE)' }, { code: '865116', name: 'SUCCESS CORPORATION CO., LTD. (HEAD OFFICE)' }, { code: '860324', name: 'THAI ENGINEERING PRODUCTS CO.,LTD.' }, { code: '867969', name: 'TOPMOST TECHNOLOGY INNOVATION CO.,LTD. (HEAD OFFICE)' }, { code: '863051', name: 'TRD MECHANICAL TECHNOLOGY CO., LTD.' }, { code: 'W006DU', name: 'TUE AUTOMATION ENGINEERING CO.,LTD. (HEAD OFFICE)' }, { code: '867262', name: 'TW.ENGINEERING SPECIALIST CO.,LTD.(HEAD OFFICE)' }, { code: '146066', name: 'UACJ METAL COMPONENTS (THAILAND) CO.,LTD. (HEAD OFFICE)' }, { code: 'W00B42', name: 'VISCON TECHNOLOGY CO.,LTD (HEAD OFFICE)' }, { code: 'W003U5', name: 'VISS AUTO SYSTEMS CO.,LTD (HEAD OFFICE)' }, { code: '868658', name: 'YAMAHA ROBOTICS MANUFACTURING ASIA CO., LTD' }, { code: '869187', name: 'ZE TRUE AUTOMATION CO.,LTD. (HEAD OFFICE)' }
+    ];
+    let db=[...initialData],mode='code',activeSuggestionIndex=-1,addCounter=0,deleteCounter=0,pendingDeleteCode='';
+    const queryInput=document.getElementById('queryInput'),bulkData=document.getElementById('bulkData'),suggestionsEl=document.getElementById('suggestions'),resultsEl=document.getElementById('results'),tableBody=document.getElementById('tableBody'),manageList=document.getElementById('manageList'),newCode=document.getElementById('newCode'),newName=document.getElementById('newName'),resultCount=document.getElementById('resultCount'),totalCount=document.getElementById('totalCount'),addCount=document.getElementById('addCount'),deleteCount=document.getElementById('deleteCount'),statusCount=document.getElementById('statusCount'),statusText=document.getElementById('statusText'),inlineStatus=document.getElementById('inlineStatus'),modeButtons=[...document.querySelectorAll('.seg-btn')],deleteModal=document.getElementById('deleteModal'),modalMessage=document.getElementById('modalMessage'),confirmDeleteBtn=document.getElementById('confirmDeleteBtn'),cancelDeleteBtn=document.getElementById('cancelDeleteBtn');
+    const normalize=v=>String(v||'').trim().toUpperCase();
+    const escapeHtml=v=>String(v).replace(/[&<>\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+    function setStatus(main,text){statusCount.textContent=main;statusText.textContent=text;inlineStatus.textContent=text}
+    function updateCounters(){totalCount.textContent=db.length;addCount.textContent=addCounter;deleteCount.textContent=deleteCounter}
+    function sortDb(){db.sort((a,b)=>a.name.localeCompare(b.name))}
+    function renderTable(){sortDb();tableBody.innerHTML=db.map(item=>`<tr><td>${escapeHtml(item.code)}</td><td>${escapeHtml(item.name)}</td></tr>`).join('');updateCounters()}
+    function openDeleteModal(code){const item=db.find(row=>normalize(row.code)===normalize(code));if(!item){setStatus('Not found',`ไม่พบ ${code}`);return;}pendingDeleteCode=item.code;modalMessage.innerHTML=`คุณต้องการลบรายการนี้จริงหรือไม่?<br><br><strong>${escapeHtml(item.name)}</strong><br>Code: ${escapeHtml(item.code)}`;deleteModal.classList.add('show');deleteModal.setAttribute('aria-hidden','false')}
+    function closeDeleteModal(){pendingDeleteCode='';deleteModal.classList.remove('show');deleteModal.setAttribute('aria-hidden','true')}
+    function deleteItem(code){const cleanCode=normalize(code);const before=db.length;db=db.filter(row=>normalize(row.code)!==cleanCode);if(db.length!==before){deleteCounter+=1;renderAll();search();setStatus('Deleted',`ลบ ${cleanCode} สำเร็จ`)}else{setStatus('Not found',`ไม่พบ ${cleanCode}`)}}
+    function prefillEdit(code){const item=db.find(row=>normalize(row.code)===normalize(code));if(!item)return;newCode.value=item.code;newName.value=item.name;newName.focus();setStatus('Edit',`โหลด ${item.code} มาแก้ไขแล้ว`)}
+    function renderManageList(){manageList.innerHTML='';const frag=document.createDocumentFragment();db.forEach(item=>{const row=document.createElement('div');row.className='manage-row';row.innerHTML=`<div class="code">${escapeHtml(item.code)}</div><div class="name">${escapeHtml(item.name)}</div><div class="mini-actions"></div>`;const actions=row.querySelector('.mini-actions');const editBtn=document.createElement('button');editBtn.className='btn btn-secondary';editBtn.type='button';editBtn.textContent='แก้ไข/โหลดค่า';editBtn.addEventListener('click',()=>prefillEdit(item.code));const delBtn=document.createElement('button');delBtn.className='btn btn-danger';delBtn.type='button';delBtn.textContent='Delete';delBtn.addEventListener('click',()=>openDeleteModal(item.code));actions.append(editBtn,delBtn);frag.appendChild(row)});manageList.appendChild(frag)}
+    function rankedItems(q){const nq=normalize(q);const source=mode==='code'?(item=>normalize(item.code)):(item=>normalize(item.name));return db.map(item=>{const target=source(item);const idx=target.indexOf(nq);let score=9999;if(!nq)score=5000;else if(target===nq)score=0;else if(target.startsWith(nq))score=1;else if(idx>-1)score=10+idx;return{item,score}}).filter(row=>row.score<9999).sort((a,b)=>a.score-b.score||a.item.name.localeCompare(b.item.name))}
+    function renderResults(items,q=''){resultCount.textContent=items.length;if(!items.length){resultsEl.innerHTML=`<div class="empty">ไม่พบข้อมูล${q?` สำหรับ “${escapeHtml(q)}”`:''}<br>ลองค้นหาด้วยบางส่วนของ Code หรือ Customer Name</div>`;return;}resultsEl.innerHTML=items.map((item,idx)=>`<article class="result"><div class="code">${escapeHtml(item.code)}</div><div class="name">${escapeHtml(item.name)}</div><div class="tiny">Match #${idx+1} · Search by ${mode==='code'?'Code':'Customer Name'}</div></article>`).join('')}
+    function hideSuggestions(){suggestionsEl.hidden=true;suggestionsEl.innerHTML='';activeSuggestionIndex=-1}
+    function selectSuggestion(item){queryInput.value=mode==='code'?item.code:item.name;hideSuggestions();search()}
+    function renderSuggestions(q){const shouldShow=mode==='name'&&normalize(q).length>0;if(!shouldShow)return hideSuggestions();const suggestions=rankedItems(q).slice(0,8).map(row=>row.item);if(!suggestions.length)return hideSuggestions();suggestionsEl.hidden=false;suggestionsEl.innerHTML=suggestions.map((item,idx)=>`<button class="suggestion-item ${idx===activeSuggestionIndex?'active':''}" type="button"><span class="suggestion-main">${escapeHtml(item.name)}</span><span class="suggestion-sub">Code: ${escapeHtml(item.code)}</span></button>`).join('');[...suggestionsEl.querySelectorAll('.suggestion-item')].forEach((btn,idx)=>btn.addEventListener('mousedown',event=>{event.preventDefault();selectSuggestion(suggestions[idx])}))}
+    function search(){const q=normalize(queryInput.value);if(!q){renderResults(db.slice(0,12));hideSuggestions();return;}const items=rankedItems(q).map(row=>row.item);renderResults(items,q);renderSuggestions(q)}
+    function upsertItem(code,name,isUpdate=false){const cleanCode=normalize(code),cleanName=String(name||'').trim();if(!cleanCode||!cleanName){setStatus('Error','กรุณากรอก Code และ Customer Name ให้ครบ');return false;}const duplicateCodeIndex=db.findIndex(item=>normalize(item.code)===cleanCode);const duplicateNameIndex=db.findIndex(item=>normalize(item.name)===normalize(cleanName));if(!isUpdate){if(duplicateCodeIndex>=0){setStatus('Duplicate','Code นี้มีอยู่แล้ว');return false;}if(duplicateNameIndex>=0){setStatus('Duplicate','Customer Name นี้มีอยู่แล้ว');return false;}db.push({code:cleanCode,name:cleanName});addCounter+=1;setStatus('Added',`เพิ่ม ${cleanCode} สำเร็จ`)}else{if(duplicateCodeIndex===-1){setStatus('Not found','ไม่พบ Code เดิมสำหรับ Update');return false;}const duplicateOtherName=db.findIndex(item=>normalize(item.name)===normalize(cleanName)&&normalize(item.code)!==cleanCode);if(duplicateOtherName>=0){setStatus('Duplicate','มี Customer Name นี้อยู่ใน Code อื่นแล้ว');return false;}db[duplicateCodeIndex]={code:cleanCode,name:cleanName};setStatus('Updated',`อัปเดต ${cleanCode} สำเร็จ`)}renderAll();queryInput.value=cleanCode;search();return true}
+    function parseBulkData(text){return text.split(/\n+/).map(line=>line.trim()).filter(Boolean).map(line=>{const firstComma=line.indexOf(',');if(firstComma===-1)return null;const code=line.slice(0,firstComma).trim();const name=line.slice(firstComma+1).trim();if(!code||!name)return null;return{code,name}}).filter(Boolean)}
+    function exportCsv(){const rows=[['CODE','CUSTOMER_NAME'],...db.map(item=>[item.code,item.name])];const csv=rows.map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='customer-code-data.csv';a.click();URL.revokeObjectURL(url);setStatus('Exported','ดาวน์โหลด CSV แล้ว')}
+    function renderAll(){renderTable();renderManageList()}
+    confirmDeleteBtn.addEventListener('click',()=>{if(pendingDeleteCode)deleteItem(pendingDeleteCode);closeDeleteModal()});
+    cancelDeleteBtn.addEventListener('click',closeDeleteModal);
+    deleteModal.addEventListener('click',event=>{if(event.target===deleteModal)closeDeleteModal()});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&deleteModal.classList.contains('show'))closeDeleteModal()});
+    modeButtons.forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;modeButtons.forEach(b=>b.classList.toggle('active',b===btn));activeSuggestionIndex=-1;queryInput.placeholder=mode==='code'?'เช่น W00GKH หรือ 869401':'เช่น SIAM, FUJI, INTERPART';search()}));
+    document.getElementById('searchBtn').addEventListener('click',search);queryInput.addEventListener('input',()=>{activeSuggestionIndex=-1;search()});queryInput.addEventListener('focus',()=>renderSuggestions(queryInput.value));queryInput.addEventListener('blur',()=>setTimeout(hideSuggestions,120));queryInput.addEventListener('keydown',event=>{const buttons=[...suggestionsEl.querySelectorAll('.suggestion-item')];if(!buttons.length||suggestionsEl.hidden)return;if(event.key==='ArrowDown'){event.preventDefault();activeSuggestionIndex=(activeSuggestionIndex+1)%buttons.length;renderSuggestions(queryInput.value)}else if(event.key==='ArrowUp'){event.preventDefault();activeSuggestionIndex=(activeSuggestionIndex-1+buttons.length)%buttons.length;renderSuggestions(queryInput.value)}else if(event.key==='Enter'&&activeSuggestionIndex>=0){event.preventDefault();buttons[activeSuggestionIndex].dispatchEvent(new MouseEvent('mousedown',{bubbles:true}))}else if(event.key==='Escape'){hideSuggestions()}});
+    document.getElementById('addBtn').addEventListener('click',()=>{if(upsertItem(newCode.value,newName.value,false)){newCode.value='';newName.value='';}});
+    document.getElementById('updateBtn').addEventListener('click',()=>{if(upsertItem(newCode.value,newName.value,true)){newCode.value='';newName.value='';}});
+    document.getElementById('loadBtn').addEventListener('click',()=>{const parsed=parseBulkData(bulkData.value);if(!parsed.length){setStatus('Error','ยังไม่พบข้อมูลที่ถูกต้อง');return;}let added=0;parsed.forEach(item=>{const exists=db.some(row=>normalize(row.code)===normalize(item.code));const existsName=db.some(row=>normalize(row.name)===normalize(item.name));if(!exists&&!existsName){db.push({code:normalize(item.code),name:item.name.trim()});added+=1;}});addCounter+=added;bulkData.value='';renderAll();search();setStatus('Bulk add',`เพิ่มข้อมูลสำเร็จ ${added} รายการ`)});
+    document.getElementById('resetBtn').addEventListener('click',()=>{db=[...initialData];addCounter=0;deleteCounter=0;queryInput.value='';newCode.value='';newName.value='';bulkData.value='';hideSuggestions();closeDeleteModal();renderAll();renderResults(db.slice(0,12));setStatus('Ready','รีเซ็ตข้อมูลแล้ว')});
+    document.getElementById('exportBtn').addEventListener('click',exportCsv);
+    (function(){const t=document.querySelector('[data-theme-toggle]');const r=document.documentElement;let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';r.setAttribute('data-theme',d);t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);t.innerHTML=d==='dark'?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'})})();
+    renderAll();renderResults(db.slice(0,12));setStatus('Ready','ระบบพร้อมใช้งาน');
+  </script>
+</body>
+</html>
